@@ -18,6 +18,7 @@
 #}
 <!DOCTYPE html>
 <html lang="en">
+	<a class="navbar-brand" href="/">EcoCleanUp</a>
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,7 +27,6 @@
 	</head>
 	<body>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
 		<nav class="navbar navbar-expand-sm navbar-dark bg-primary mb-3">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="/">Login Example</a>
@@ -38,7 +38,34 @@
 						<li class="nav-item">
 							<a class="nav-link{{' active' if active_page=='home' else ''}}" href="{% if session['role'] == 'event_leader' %}{{ url_for('event_leader_home') }}{% elif session['role'] == 'event_leader' %}{{ url_for('event_leader_home') }}{% elif session['role'] == 'admin' %}{{ url_for('admin_home') }}{% endif %}">Home</a>
 						</li>
-						{# Add any new top-level menu items here. #}
+						<!-- volunteer -->
+						{% if session['role'] == 'volunteer' %}
+						<li class="nav-item">
+							<a class="nav-link" href="{{ url_for('volunteer_events') }}">Browse Events</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link{% if active_page == 'history' %} active{% endif %}" 
+							href="{{ url_for('volunteer_history') }}">My History</a>
+						</li>
+						
+						<!-- event_leader -->
+						{% elif session['role'] == 'event_leader' %}
+						<li class="nav-item">
+							<a class="nav-link" href="#">My Events</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Create Event</a>
+						</li>
+						
+						<!-- admin -->
+						{% elif session['role'] == 'admin' %}
+						<li class="nav-item">
+							<a class="nav-link" href="#">Manage Users</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Reports</a>
+						</li>
+					   {% endif %}
 					</ul>
 					<ul class="navbar-nav">
 						<li class="nav-item">
@@ -53,7 +80,24 @@
 		</nav>
 
 		<main>
+			<!-- Flash messages -->
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					<div class="container mt-3">
+						{% for category, message in messages %}
+							<div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'warning' if category == 'warning' else 'info' }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						{% endfor %}
+					</div>
+				{% endif %}
+			{% endwith %}
+			
 			{% block content %}{% endblock %}
 		</main>
+		<footer class="text-center mt-5 py-3 bg-light text-muted border-top">
+    <small>Liying.yu - 1161457 | COMP639 Project 2026</small>
+</footer>
 	</body>
 </html>

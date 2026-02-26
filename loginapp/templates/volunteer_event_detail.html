@@ -1,0 +1,99 @@
+{% extends 'userbase.html' %}
+
+{% block title %}{{ event.event_name }}{% endblock %}
+
+{% set active_page = 'events' %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('volunteer_events') }}">Events</a></li>
+            <li class="breadcrumb-item active">{{ event.event_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">{{ event.event_name }}</h2>
+                    <p class="text-muted mb-3">
+                        {{ event.event_type }} | Organized by {{ event.leader_name or 'Event Leader' }}
+                    </p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-sm-6 mb-2">
+                            <strong>Location:</strong><br>
+                            {{ event.location }}
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <strong>Date:</strong><br>
+                            {{ event.event_date }}
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <strong>Time:</strong><br>
+                            {{ event.start_time }} - {{ event.end_time }}
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <strong>Duration:</strong><br>
+                            {{ event.duration }} hours
+                        </div>
+                    </div>
+
+                    {% if event.description %}
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <p class="mt-1">{{ event.description }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if event.supplies %}
+                    <div class="mb-3">
+                        <strong>Supplies needed:</strong>
+                        <p class="mt-1">{{ event.supplies }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if event.safety_info %}
+                    <div class="mb-3">
+                        <strong>Safety information:</strong>
+                        <p class="mt-1">{{ event.safety_info }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Registration</h5>
+                    
+                    {% if registered %}
+                        <div class="alert alert-success">
+                            You are registered for this event!
+                        </div>
+                    {% if registration and registration.registration_time %}
+                        <p class="text-muted mb-1">
+                            Registered on: {{ registration.registration_time.strftime('%Y-%m-%d %H:%M') }}
+                        </p>
+                    {% endif %}
+                        <p class="text-muted">
+                            Status: {{ registration.attendance_stat }}
+                        </p>
+                    {% else %}
+                        <p class="mb-3">Ready to help? Register now!</p>
+                        <form method="post" action="{{ url_for('volunteer_register', event_id=event.event_id) }}">
+                            <button type="submit" class="btn btn-success w-100" 
+                                    onclick="return confirm('Confirm registration for this event?')">
+                                Register for Event
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

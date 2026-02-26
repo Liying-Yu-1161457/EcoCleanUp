@@ -42,16 +42,19 @@ INSERT INTO users (username, password_hash, email, role, status, full_name, home
 
 
 -- 4. INSERT EVENTS (20)
+INSERT INTO events (event_id, event_name, location, event_type, event_date, start_time, end_time, duration, supplies, description, safety_info, status, event_leader_id, created_at) VALUES
+(1, 'Sumner Beach Cleanup', 'Sumner Beach, Christchurch', 'beach', '2025-12-15', '09:00', '12:00', 3, 'Gloves, bags, hi-vis vests', 'Monthly beach cleanup focusing on plastic waste', 'Bring sunscreen and water. Meet at surf club.', 'completed', 1, '2025-11-01 10:00:00'),
+(2, 'Wellington Waterfront Restoration', 'Frank Kitts Park, Wellington', 'park', '2025-12-18', '10:00', '14:00', 4, 'Gloves, weeding tools, native plants', 'Planting native species along waterfront', 'Wear sturdy shoes. Training provided.', 'completed', 2, '2025-11-05 14:30:00'),
+(3, 'Hamilton River Care', 'Riverbank, Hamilton Gardens', 'river', '2025-12-10', '09:30', '12:30', 3, 'Gloves, bags, litter pickers', 'Cleaning Waikato River banks', 'Stay away from water edge. Adult supervision.', 'completed', 3, '2025-11-10 09:15:00'),
+(4, 'Devonport Coastal Clean', 'Devonport Beach, Auckland', 'beach', '2025-12-22', '08:00', '11:00', 3, 'Gloves, bags, sunhats', 'Early morning beach cleanup', 'Sun protection advised. Family friendly.', 'completed', 4, '2025-11-15 16:45:00');
+
+INSERT INTO events (event_id, event_name, location, event_type, event_date, start_time, end_time, duration, supplies, description, safety_info, status, event_leader_id, created_at) VALUES
+(5, 'Dunedin Bush Regeneration', 'Town Belt, Dunedin', 'bush', '2026-03-25', '09:00', '13:00', 4, 'Gloves, loppers, weed bags', 'Removing invasive weeds from native bush', 'Long pants recommended. Steep terrain.', 'upcoming', 5, '2026-02-01 11:20:00'),
+(6, 'New Plymouth Park Cleanup', 'Pukekura Park, New Plymouth', 'park', '2026-03-27', '10:00', '13:00', 3, 'Gloves, bags, pickers', 'General park maintenance and litter collection', 'Meet at main entrance. All welcome.', 'upcoming', 2, '2026-02-05 13:40:00'),
+(7, 'Tauranga Harbour Clean', 'The Strand, Tauranga', 'harbour', '2026-03-29', '09:00', '12:00', 3, 'Gloves, bags, waders (limited)', 'Harbour edge cleanup focusing on plastics', 'Waterproof footwear advised.', 'upcoming', 1, '2026-02-08 09:30:00'),
+(8, 'Queenstown Trail Maintenance', 'Queenstown Gardens, Queenstown', 'trail', '2026-04-02', '09:00', '15:00', 6, 'Gloves, tools, lunch provided', 'Maintaining walking tracks and planting', 'Full day event. Lunch provided. Fitness required.', 'upcoming', 3, '2026-02-10 15:15:00');
 
 INSERT INTO events (event_name, location, event_type, event_date, start_time, end_time, duration, supplies, description, safety_info, status, event_leader_id) VALUES
-('Sumner Beach Cleanup', 'Sumner Beach, Christchurch', 'beach', '2026-03-15', '09:00', '12:00', 3, 'Gloves, bags, hi-vis vests', 'Monthly beach cleanup focusing on plastic waste', 'Bring sunscreen and water. Meet at surf club.', 'upcoming', 1),
-('Wellington Waterfront Restoration', 'Frank Kitts Park, Wellington', 'park', '2026-03-18', '10:00', '14:00', 4, 'Gloves, weeding tools, native plants', 'Planting native species along waterfront', 'Wear sturdy shoes. Training provided.', 'upcoming', 2),
-('Hamilton River Care', 'Riverbank, Hamilton Gardens', 'river', '2026-03-20', '09:30', '12:30', 3, 'Gloves, bags, litter pickers', 'Cleaning Waikato River banks', 'Stay away from water edge. Adult supervision.', 'upcoming', 3),
-('Devonport Coastal Clean', 'Devonport Beach, Auckland', 'beach', '2026-03-22', '08:00', '11:00', 3, 'Gloves, bags, sunhats', 'Early morning beach cleanup', 'Sun protection advised. Family friendly.', 'upcoming', 4),
-('Dunedin Bush Regeneration', 'Town Belt, Dunedin', 'bush', '2026-03-25', '09:00', '13:00', 4, 'Gloves, loppers, weed bags', 'Removing invasive weeds from native bush', 'Long pants recommended. Steep terrain.', 'upcoming', 5),
-('New Plymouth Park Cleanup', 'Pukekura Park, New Plymouth', 'park', '2026-03-27', '10:00', '13:00', 3, 'Gloves, bags, pickers', 'General park maintenance and litter collection', 'Meet at main entrance. All welcome.', 'upcoming', 2),
-('Tauranga Harbour Clean', 'The Strand, Tauranga', 'harbour', '2026-03-29', '09:00', '12:00', 3, 'Gloves, bags, waders (limited)', 'Harbour edge cleanup focusing on plastics', 'Waterproof footwear advised.', 'upcoming', 1),
-('Queenstown Trail Maintenance', 'Queenstown Gardens, Queenstown', 'trail', '2026-04-02', '09:00', '15:00', 6, 'Gloves, tools, lunch provided', 'Maintaining walking tracks and planting', 'Full day event. Lunch provided. Fitness required.', 'upcoming', 3),
 ('Gisborne Beach Clean', 'Midway Beach, Gisborne', 'beach', '2026-04-05', '08:30', '11:30', 3, 'Gloves, bags, sunscreen', 'Morning beach cleanup', 'First sunrise city event. Bring camera.', 'upcoming', 4),
 ('Nelson Nature Reserve', 'Grampians Reserve, Nelson', 'bush', '2026-04-08', '10:00', '14:00', 4, 'Gloves, weeding tools, water', 'Weed control in native reserve', 'Moderate fitness required. Hills.', 'upcoming', 5),
 ('Rotorua Lakefront Clean', 'Lake Rotorua, Rotorua', 'lake', '2026-04-10', '09:00', '12:00', 3, 'Gloves, bags, grabbers', 'Cleaning lakefront and geothermal areas', 'Be aware of hot spots. Stay on paths.', 'upcoming', 1),
@@ -69,31 +72,23 @@ INSERT INTO events (event_name, location, event_type, event_date, start_time, en
 -- 5. INSERT REGISTRATIONS (25)
 
 INSERT INTO registrations (user_id, event_id, registration_time, attendance_stat) VALUES
-(3, 1, '2026-03-01 10:30:00', 'registered'),    
-(4, 1, '2026-03-02 14:15:00', 'registered'),    
-(5, 2, '2026-03-03 09:00:00', 'registered'),    
-(6, 2, '2026-03-03 11:30:00', 'registered'),    
-(7, 3, '2026-03-04 08:45:00', 'registered'),    
-(8, 3, '2026-03-04 16:20:00', 'registered'),    
-(9, 4, '2026-03-05 12:10:00', 'registered'),    
-(10, 4, '2026-03-05 13:30:00', 'registered'),   
-(11, 5, '2026-03-06 09:30:00', 'registered'),   
-(12, 5, '2026-03-06 15:45:00', 'registered'),   
-(13, 6, '2026-03-07 10:00:00', 'registered'),   
-(14, 6, '2026-03-07 14:30:00', 'registered'),   
-(15, 7, '2026-03-08 08:20:00', 'registered'),   
-(16, 7, '2026-03-08 17:00:00', 'registered'),   
-(3, 8, '2026-03-09 09:15:00', 'registered'),    
-(5, 8, '2026-03-09 11:45:00', 'registered'),    
-(7, 9, '2026-03-10 10:30:00', 'registered'),    
-(9, 9, '2026-03-10 13:20:00', 'registered'),    
-(11, 10, '2026-03-11 09:00:00', 'registered'),  
-(13, 10, '2026-03-11 16:30:00', 'registered'),  
-(15, 11, '2026-03-12 08:45:00', 'registered'),  
-(17, 11, '2026-03-12 12:15:00', 'registered'),  
-(19, 12, '2026-03-13 14:00:00', 'registered'),  
-(21, 13, '2026-03-14 09:30:00', 'registered'),  
-(4, 14, '2026-03-14 11:00:00', 'registered');   
+(3, 1, '2025-11-20 10:30:00', 'attended'),
+(4, 1, '2025-11-21 14:15:00', 'attended'),
+(5, 2, '2025-11-22 09:00:00', 'attended'),
+(6, 2, '2025-11-22 11:30:00', 'no_show'),  
+(7, 3, '2025-11-23 08:45:00', 'attended'),
+(8, 3, '2025-11-23 16:20:00', 'attended'),
+(9, 4, '2025-11-24 12:10:00', 'attended'),
+(10, 4, '2025-11-24 13:30:00', 'attended');
+
+INSERT INTO registrations (user_id, event_id, registration_time, attendance_stat) VALUES
+(3, 5, '2026-02-15 09:15:00', 'registered'),
+(5, 5, '2026-02-15 11:45:00', 'registered'),
+(7, 6, '2026-02-16 10:30:00', 'registered'),
+(9, 6, '2026-02-16 13:20:00', 'registered'),
+(11, 7, '2026-02-17 09:00:00', 'registered'),
+(13, 7, '2026-02-17 16:30:00', 'registered'),
+(15, 8, '2026-02-18 08:45:00', 'registered');
 
 
 -- 6. INSERT FEEDBACK (for past events)
@@ -103,8 +98,8 @@ INSERT INTO feedback (user_id, event_id, rating, comments, submitted_at) VALUES
 (4, 1, 4, 'Well organized. Great to see the community come together.', '2025-12-16 14:20:00'),
 (5, 2, 5, 'The planting was fun. The seedlings are looking good!', '2025-12-19 16:45:00'),
 (6, 2, 4, 'Good turnout. Would be better with more tools.', '2025-12-19 15:10:00'),
-(7, 3, 5, 'Lovely day by the river. Made new friends.', '2025-12-21 13:30:00'),
-(8, 3, 3, 'Good cause but needs better signage to find meeting point.', '2025-12-21 12:15:00'),
+(7, 3, 5, 'Lovely day by the river. Made new friends.', '2025-12-11 13:30:00'),  
+(8, 3, 3, 'Good cause but needs better signage to find meeting point.', '2025-12-11 12:15:00'),
 (9, 4, 5, 'Perfect weather, perfect company. Devonport looking clean!', '2025-12-23 11:45:00'),
 (10, 4, 4, 'Enjoyed it. Coffee after was a nice touch.', '2025-12-23 12:30:00');
 
@@ -114,7 +109,7 @@ INSERT INTO feedback (user_id, event_id, rating, comments, submitted_at) VALUES
 INSERT INTO outcomes (event_id, num_attendees, bags_collected, recyclables_sorted, other_achievements, recorded_by, recorded_at) VALUES
 (1, 12, 15, 8, 'Found interesting marine specimens. Reported to DOC.', 1, '2025-12-16 13:00:00'),
 (2, 18, 5, 2, 'Planted 50 native trees. Weed control completed.', 2, '2025-12-19 15:00:00'),
-(3, 14, 22, 10, 'Removed shopping trolleys from river. Council notified.', 3, '2025-12-21 14:30:00'),
+(3, 14, 22, 10, 'Removed shopping trolleys from river. Council notified.', 3, '2025-12-11 14:30:00'),
 (4, 20, 18, 12, 'Microplastic survey conducted. Data sent to university.', 4, '2025-12-23 13:15:00');
 
 

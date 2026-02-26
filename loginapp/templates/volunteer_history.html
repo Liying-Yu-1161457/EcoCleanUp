@@ -1,0 +1,76 @@
+{% extends 'userbase.html' %}
+
+{% block title %}My Participation History{% endblock %}
+
+{% set active_page = 'history' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">My Participation History</h2>
+
+    {% if history %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Attendance</th>
+                        <th>Feedback</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('volunteer_event_detail', event_id=item.event_id) }}">
+                                {{ item.event_name }}
+                            </a>
+                        </td>
+                        <td>{{ item.event_date }}<br><small class="text-muted">{{ item.start_time }} - {{ item.end_time }}</small></td>
+                        <td>{{ item.location }}</td>
+                        <td>
+                            {% if item.event_status == 'upcoming' %}
+                                <span class="badge bg-primary">Upcoming</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Past</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.attendance_stat == 'attended' %}
+                                <span class="badge bg-success">Attended</span>
+                            {% elif item.attendance_stat == 'no_show' %}
+                                <span class="badge bg-danger">No Show</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Registered</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.rating %}
+                                <div>Rating: {{ item.rating }}/5</div>
+                                <small class="text-muted">{{ item.feedback_comment[:30] }}{% if item.feedback_comment|length > 30 %}...{% endif %}</small>
+                            {% elif item.event_status == 'past' and item.attendance_stat == 'attended' %}
+                                <a href="{{ url_for('volunteer_feedback', event_id=item.event_id) }}" class="btn btn-sm btn-outline-primary">Leave Feedback</a>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('volunteer_event_detail', event_id=item.event_id) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            You haven't registered for any events yet. 
+            <a href="{{ url_for('volunteer_events') }}">Browse upcoming events</a> to get started!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
