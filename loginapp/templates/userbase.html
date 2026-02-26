@@ -36,7 +36,7 @@
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav me-auto">
 						<li class="nav-item">
-							<a class="nav-link{{' active' if active_page=='home' else ''}}" href="{% if session['role'] == 'customer' %}{{ url_for('customer_home') }}{% elif session['role'] == 'staff' %}{{ url_for('staff_home') }}{% elif session['role'] == 'admin' %}{{ url_for('admin_home') }}{% endif %}">Home</a>
+							<a class="nav-link{{' active' if active_page=='home' else ''}}" href="{% if session['role'] == 'event_leader' %}{{ url_for('event_leader_home') }}{% elif session['role'] == 'event_leader' %}{{ url_for('event_leader_home') }}{% elif session['role'] == 'admin' %}{{ url_for('admin_home') }}{% endif %}">Home</a>
 						</li>
 						{# Add any new top-level menu items here. #}
 					</ul>

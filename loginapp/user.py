@@ -9,7 +9,7 @@ import re
 flask_bcrypt = Bcrypt(app)
 
 # Default role assigned to new users upon registration.
-DEFAULT_USER_ROLE = 'customer'
+DEFAULT_USER_ROLE = 'volunteer'
 
 def user_home_url():
     """Generates a URL to the homepage for the currently logged-in user.
@@ -21,10 +21,10 @@ def user_home_url():
     if 'loggedin' in session:
         role = session.get('role', None)
 
-        if role=='customer':
-            home_endpoint='customer_home'
-        elif role=='staff':
-            home_endpoint='staff_home'
+        if role=='volunteer':
+            home_endpoint='volunteer_home'
+        elif role=='event_leader':
+            home_endpoint='event_leader_home'
         elif role=='admin':
             home_endpoint='admin_home'
         else:
@@ -76,7 +76,7 @@ def login():
             # equally valid to put the whole SQL statement on one line like we
             # do at the beginning of the `signup` function.
             cursor.execute('''
-                           SELECT user_id, username, password_hash, person_role
+                           SELECT user_id, username, password_hash, role
                            FROM users
                            WHERE username = %s;
                            ''', (username,))
@@ -100,7 +100,7 @@ def login():
                     session['loggedin'] = True
                     session['user_id'] = account['user_id']
                     session['username'] = account['username']
-                    session['role'] = account['person_role']
+                    session['role'] = account['role']
 
                     return redirect(user_home_url())
                 else:
@@ -230,7 +230,7 @@ def signup():
             # possibility, and display a more useful message to the user.
             with db.get_cursor() as cursor:
                 cursor.execute('''
-                               INSERT INTO users (username, password_hash, email, person_role)
+                               INSERT INTO users (username, password_hash, email, role)
                                VALUES (%s, %s, %s, %s);
                                ''',
                                (username, password_hash, email, DEFAULT_USER_ROLE,))
@@ -259,7 +259,7 @@ def profile():
 
     # Retrieve user profile from the database.
     with db.get_cursor() as cursor:
-        cursor.execute('SELECT username, email, person_role FROM users WHERE user_id = %s;',
+        cursor.execute('SELECT username, email, role FROM users WHERE user_id = %s;',
                        (session['user_id'],))
         profile = cursor.fetchone()
 

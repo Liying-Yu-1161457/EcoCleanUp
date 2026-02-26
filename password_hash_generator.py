@@ -32,11 +32,33 @@ flask_bcrypt = Bcrypt(app)
 
 # Replace the example UserAccount objects below with the initial user accounts
 # for your own web app. You can add as many as you need to the list.
-users = [UserAccount('user1', 'customer1pass'), 
-         UserAccount('user2', 'customer2pass'),
-         UserAccount('staff1', 'staff1pass'),
-         UserAccount('staff2', 'staff2pass'),
-         UserAccount('admin1', 'admin1pass')]
+users = [UserAccount('admin01Tanya', 'Abcd1234'), 
+         UserAccount('admin02Audra', '1234Abcd'),
+         UserAccount('Philip', 'Philippass'),
+         UserAccount('Rose', 'Rosepass'),
+         UserAccount('Skyler', 'Skylerpass'),
+         UserAccount('Fiona', 'Fionapass'), 
+         UserAccount('Joel', 'Joelpass'),
+         UserAccount('Rudyard', 'Rudyardpass'),
+         UserAccount('Chelsea', 'Chelseapass'),
+         UserAccount('Kerry', 'Kerrypass'),
+         UserAccount('Cherokee', 'Cherokeepass'), 
+         UserAccount('Nathaniel', 'Nathanielpass'),
+         UserAccount('Maya', 'Mayapass'),
+         UserAccount('Scarlet', 'Scarletpass'),
+         UserAccount('Juliet', 'Julietpass'),
+         UserAccount('Haley', 'Haleypass'), 
+         UserAccount('Daniel', 'Danielpass'),
+         UserAccount('Baker', 'Bakerpass'),
+         UserAccount('Urielle', 'Uriellepass'),
+         UserAccount('Nola', 'Nolapass'),
+         UserAccount('Emerson', 'Emersonpass'), 
+         UserAccount('Kiona', 'Kionapass'),
+         UserAccount('Tana', 'Tanapass'),
+         UserAccount('Ava', 'Avapass'),
+         UserAccount('Bell', 'Bellpass'),
+         UserAccount('Rogan', 'Roganpass'),
+         UserAccount('Silas', 'Silaspass')]
 
 print('Username | Password | Hash | Password Matches Hash')
 
