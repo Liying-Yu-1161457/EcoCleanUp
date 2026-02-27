@@ -87,5 +87,5 @@ for user in users:
     # Python prints out the hash, it will surrounded it with `b''` to indicate
     # that the hash is a binary string. You don't need to do this if you're
     # passing the hash in to MySQL: you can just use password_hash directly, as
-    # we do in the Login Example project, and it will accept the binary string.
+    # we do in the EcoCleanUp project, and it will accept the binary string.
     print(f'{user.username} | {user.password} | {password_hash.decode()} | {password_matches_hash}')

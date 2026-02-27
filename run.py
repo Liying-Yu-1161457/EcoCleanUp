@@ -1,4 +1,4 @@
-"""This script provides an easy way to run our "Login Example" app.
+"""This script provides an easy way to run our "EcoCleanUp" app.
 
 There are many ways to run a Flask app, and not all of them require run.py.
 When running locally, you can use any of the following approaches:

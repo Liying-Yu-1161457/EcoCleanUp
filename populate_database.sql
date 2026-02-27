@@ -54,19 +54,19 @@ INSERT INTO events (event_id, event_name, location, event_type, event_date, star
 (7, 'Tauranga Harbour Clean', 'The Strand, Tauranga', 'harbour', '2026-03-29', '09:00', '12:00', 3, 'Gloves, bags, waders (limited)', 'Harbour edge cleanup focusing on plastics', 'Waterproof footwear advised.', 'upcoming', 1, '2026-02-08 09:30:00'),
 (8, 'Queenstown Trail Maintenance', 'Queenstown Gardens, Queenstown', 'trail', '2026-04-02', '09:00', '15:00', 6, 'Gloves, tools, lunch provided', 'Maintaining walking tracks and planting', 'Full day event. Lunch provided. Fitness required.', 'upcoming', 3, '2026-02-10 15:15:00');
 
-INSERT INTO events (event_name, location, event_type, event_date, start_time, end_time, duration, supplies, description, safety_info, status, event_leader_id) VALUES
-('Gisborne Beach Clean', 'Midway Beach, Gisborne', 'beach', '2026-04-05', '08:30', '11:30', 3, 'Gloves, bags, sunscreen', 'Morning beach cleanup', 'First sunrise city event. Bring camera.', 'upcoming', 4),
-('Nelson Nature Reserve', 'Grampians Reserve, Nelson', 'bush', '2026-04-08', '10:00', '14:00', 4, 'Gloves, weeding tools, water', 'Weed control in native reserve', 'Moderate fitness required. Hills.', 'upcoming', 5),
-('Rotorua Lakefront Clean', 'Lake Rotorua, Rotorua', 'lake', '2026-04-10', '09:00', '12:00', 3, 'Gloves, bags, grabbers', 'Cleaning lakefront and geothermal areas', 'Be aware of hot spots. Stay on paths.', 'upcoming', 1),
-('Palmerston North River Clean', 'Manawatu River, Palmerston North', 'river', '2026-04-12', '10:00', '13:00', 3, 'Gloves, bags, waders optional', 'Riverbank restoration and cleanup', 'Bring change of clothes. Might get muddy.', 'upcoming', 2),
-('Auckland Domain Planting', 'Auckland Domain, Auckland', 'park', '2026-04-15', '09:00', '12:00', 3, 'Gloves, plants, tools', 'Winter planting in historic park', 'Rain or shine. Undercover area available.', 'upcoming', 3),
-('Whanganui River Care', 'Whanganui Riverbank, Whanganui', 'river', '2026-04-18', '09:30', '13:30', 4, 'Gloves, bags, secateurs', 'River edge restoration and litter pickup', 'Long sleeves recommended. Native planting.', 'upcoming', 4),
-('Timaru Beach Cleanup', 'Caroline Bay, Timaru', 'beach', '2026-04-20', '09:00', '12:00', 3, 'Gloves, bags, sunhats', 'Popular beach spring clean', 'Family friendly. Playground nearby.', 'upcoming', 5),
-('Hawkes Bay Shore Clean', 'Napier Marine Parade, Napier', 'coastal', '2026-04-22', '08:00', '11:00', 3, 'Gloves, bags, morning tea', 'Art Deco coastline cleanup', 'Combine with walk. Interesting architecture.', 'upcoming', 1),
-('Taupo Lakeside', 'Taupo Lakefront, Taupo', 'lake', '2026-04-25', '09:00', '12:00', 3, 'Gloves, bags, pickers', 'Great Lake cleanup', 'Spectacular views. Photo opportunity.', 'upcoming', 2),
-('Invercargill Estuary', 'Estuary Walkway, Invercargill', 'wetland', '2026-04-28', '10:00', '14:00', 4, 'Gloves, boots, bags', 'Estuary and wetland restoration', 'Windy location. Dress warmly.', 'upcoming', 3),
-('Blenheim Riverside', 'Taylor River, Blenheim', 'river', '2026-05-01', '09:00', '12:00', 3, 'Gloves, bags, tools', 'Riverside walkway maintenance', 'Meet at the fountain. Coffee nearby.', 'upcoming', 4),
-('Wanaka Alpine Cleanup', 'Lake Wanaka Foreshore, Wanaka', 'alpine', '2026-05-05', '09:00', '13:00', 4, 'Gloves, bags, warm layers', 'Beautiful alpine environment cleanup', 'Weather dependent. Check forecast.', 'upcoming', 5);
+INSERT INTO events (event_id, event_name, location, event_type, event_date, start_time, end_time, duration, supplies, description, safety_info, status, event_leader_id) VALUES
+(9,'Gisborne Beach Clean', 'Midway Beach, Gisborne', 'beach', '2026-04-05', '08:30', '11:30', 3, 'Gloves, bags, sunscreen', 'Morning beach cleanup', 'First sunrise city event. Bring camera.', 'upcoming', 4),
+(10,'Nelson Nature Reserve', 'Grampians Reserve, Nelson', 'bush', '2026-04-08', '10:00', '14:00', 4, 'Gloves, weeding tools, water', 'Weed control in native reserve', 'Moderate fitness required. Hills.', 'upcoming', 5),
+(11,'Rotorua Lakefront Clean', 'Lake Rotorua, Rotorua', 'lake', '2026-04-10', '09:00', '12:00', 3, 'Gloves, bags, grabbers', 'Cleaning lakefront and geothermal areas', 'Be aware of hot spots. Stay on paths.', 'upcoming', 1),
+(12,'Palmerston North River Clean', 'Manawatu River, Palmerston North', 'river', '2026-04-12', '10:00', '13:00', 3, 'Gloves, bags, waders optional', 'Riverbank restoration and cleanup', 'Bring change of clothes. Might get muddy.', 'upcoming', 2),
+(13,'Auckland Domain Planting', 'Auckland Domain, Auckland', 'park', '2026-04-15', '09:00', '12:00', 3, 'Gloves, plants, tools', 'Winter planting in historic park', 'Rain or shine. Undercover area available.', 'upcoming', 3),
+(14,'Whanganui River Care', 'Whanganui Riverbank, Whanganui', 'river', '2026-04-18', '09:30', '13:30', 4, 'Gloves, bags, secateurs', 'River edge restoration and litter pickup', 'Long sleeves recommended. Native planting.', 'upcoming', 4),
+(15,'Timaru Beach Cleanup', 'Caroline Bay, Timaru', 'beach', '2026-04-20', '09:00', '12:00', 3, 'Gloves, bags, sunhats', 'Popular beach spring clean', 'Family friendly. Playground nearby.', 'upcoming', 5),
+(16,'Hawkes Bay Shore Clean', 'Napier Marine Parade, Napier', 'coastal', '2026-04-22', '08:00', '11:00', 3, 'Gloves, bags, morning tea', 'Art Deco coastline cleanup', 'Combine with walk. Interesting architecture.', 'upcoming', 1),
+(17,'Taupo Lakeside', 'Taupo Lakefront, Taupo', 'lake', '2026-04-25', '09:00', '12:00', 3, 'Gloves, bags, pickers', 'Great Lake cleanup', 'Spectacular views. Photo opportunity.', 'upcoming', 2),
+(18,'Invercargill Estuary', 'Estuary Walkway, Invercargill', 'wetland', '2026-04-28', '10:00', '14:00', 4, 'Gloves, boots, bags', 'Estuary and wetland restoration', 'Windy location. Dress warmly.', 'upcoming', 3),
+(19,'Blenheim Riverside', 'Taylor River, Blenheim', 'river', '2026-05-01', '09:00', '12:00', 3, 'Gloves, bags, tools', 'Riverside walkway maintenance', 'Meet at the fountain. Coffee nearby.', 'upcoming', 4),
+(20,'Wanaka Alpine Cleanup', 'Lake Wanaka Foreshore, Wanaka', 'alpine', '2026-05-05', '09:00', '13:00', 4, 'Gloves, bags, warm layers', 'Beautiful alpine environment cleanup', 'Weather dependent. Check forecast.', 'upcoming', 5);
 
 
 -- 5. INSERT REGISTRATIONS (25)
