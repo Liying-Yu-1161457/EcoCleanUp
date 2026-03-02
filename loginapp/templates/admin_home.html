@@ -2,16 +2,45 @@
 
 {% block title %}Admin Home{% endblock %}
 
-{# Set the active page to be highlighted in the navigation bar. #}
 {% set active_page = 'home' %}
 
 {% block content %}
-<section class="container py-5 text-center">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-7">
-            <h1>Admin Home Page</h1>
-            <p class="lead text-muted">This is the page an admin user sees when they first sign in. It should provide quick access to the information and features they're most likely to need when using the app.</p>
+        <div class="col-lg-8 text-center">
+            <h1 class="display-4 mb-3">Admin Dashboard</h1>
+            <p class="lead text-muted mb-4">Manage users, monitor platform activity, and generate reports.</p>
+            
+            <div class="row g-4 mt-4">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-primary">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title text-primary mb-3">Users</h5>
+                            <p class="card-text text-muted">Manage volunteers, event leaders, and their status.</p>
+                            <a href="{{ url_for('admin_users') }}" class="btn btn-primary mt-2">Manage Users</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-success">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title text-success mb-3">Reports</h5>
+                            <p class="card-text text-muted">View platform statistics and activity reports.</p>
+                            <a href="{{ url_for('admin_reports') }}" class="btn btn-success mt-2">View Reports</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-info">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title text-info mb-3">Events</h5>
+                            <p class="card-text text-muted">Overview of all cleanup events on the platform.</p>
+                            <a href="{{ url_for('admin_reports') }}" class="btn btn-info mt-2">View Events</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

@@ -52,8 +52,9 @@
                             {% if item.rating %}
                                 <div>Rating: {{ item.rating }}/5</div>
                                 <small class="text-muted">{{ item.feedback_comment[:30] }}{% if item.feedback_comment|length > 30 %}...{% endif %}</small>
-                            {% elif item.event_status == 'past' and item.attendance_stat == 'attended' %}
-                                <a href="{{ url_for('volunteer_feedback', event_id=item.event_id) }}" class="btn btn-sm btn-outline-primary">Leave Feedback</a>
+                           {% elif item.event_status == 'past' and item.attendance_stat == 'attended' and not item.rating %}
+                                <a href="{{ url_for('volunteer_feedback_submit', event_id=item.event_id) }}" 
+                                class="btn btn-sm btn-outline-primary">Leave Feedback</a>
                             {% else %}
                                 <span class="text-muted">N/A</span>
                             {% endif %}

@@ -1,0 +1,210 @@
+{% extends 'userbase.html' %}
+
+{% block title %}{{ event.event_name }}{% endblock %}
+
+{% set active_page = 'my_events' %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('event_leader_my_events') }}">My Events</a></li>
+            <li class="breadcrumb-item active">{{ event.event_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Event Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Event Details</h5>
+                    {% if event.status == 'upcoming' %}
+                    <a href="{{ url_for('event_leader_cancel_event', event_id=event.event_id) }}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure you want to cancel this event?')">Cancel Event</a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Location:</strong><br>
+                            {{ event.location }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Date:</strong><br>
+                            {{ event.event_date }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Time:</strong><br>
+                            {{ event.start_time }} - {{ event.end_time }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Duration:</strong><br>
+                            {{ event.duration }} hours
+                        </div>
+                    </div>
+                    
+                    {% if event.description %}
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <p class="mt-1">{{ event.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if event.supplies %}
+                    <div class="mb-3">
+                        <strong>Supplies needed:</strong>
+                        <p class="mt-1">{{ event.supplies }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if event.safety_info %}
+                    <div class="mb-3">
+                        <strong>Safety information:</strong>
+                        <p class="mt-1">{{ event.safety_info }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <span class="badge bg-{{ 'primary' if event.status == 'upcoming' else 'secondary' }} p-2">
+                            Status: {{ event.status }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Event Outcomes (if completed) -->
+            {% if event.status == 'completed' and outcome %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Event Outcomes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <strong>Attendees:</strong><br>
+                            {{ outcome.num_attendees }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <strong>Bags collected:</strong><br>
+                            {{ outcome.bags_collected }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <strong>Recyclables sorted:</strong><br>
+                            {{ outcome.recyclables_sorted }}
+                        </div>
+                    </div>
+                    {% if outcome.other_achievements %}
+                    <div>
+                        <strong>Other achievements:</strong>
+                        <p class="mt-1">{{ outcome.other_achievements }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Registered Volunteers -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Registered Volunteers ({{ registrations|length }})</h5>
+                    {% if event.status == 'completed' %}
+                    <span class="badge bg-light text-dark">Event Completed</span>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    {% if registrations %}
+                        <div class="list-group list-group-flush">
+                            {% for reg in registrations %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong>{{ reg.full_name or reg.username }}</strong><br>
+                                        <small class="text-muted">
+                                            Registered: {{ reg.registration_time.strftime('%Y-%m-%d %H:%M') }}
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-{{ 'success' if reg.attendance_stat == 'attended' else 'warning' if reg.attendance_stat == 'registered' else 'danger' }}">
+                                        {{ reg.attendance_stat }}
+                                    </span>
+                                </div>
+                                
+                                {% if event.status == 'upcoming' %}
+                                <div class="mt-2 d-flex gap-2">
+                                    <!-- Update attendance dropdown -->
+                                    <form method="post" action="{{ url_for('event_leader_update_attendance', event_id=event.event_id, user_id=reg.user_id) }}" class="flex-grow-1">
+                                        <div class="input-group input-group-sm">
+                                            <select name="attendance_stat" class="form-select" onchange="this.form.submit()">
+                                                <option value="registered" {{ 'selected' if reg.attendance_stat == 'registered' }}>Registered</option>
+                                                <option value="attended" {{ 'selected' if reg.attendance_stat == 'attended' }}>Attended</option>
+                                                <option value="no_show" {{ 'selected' if reg.attendance_stat == 'no_show' }}>No Show</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                    
+                                    <!-- Remove volunteer button -->
+                                    <a href="{{ url_for('event_leader_remove_volunteer', event_id=event.event_id, user_id=reg.user_id) }}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Remove this volunteer from the event?')">Remove</a>
+                                </div>
+                                {% elif event.status == 'completed' and reg.attendance_stat == 'attended' %}
+                                <div class="mt-2 text-muted small">
+                                    <i>Participant attended</i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="p-3 text-muted text-center">
+                            No volunteers registered yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            {% if event.status == 'upcoming' %}
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('event_leader_record_outcomes', event_id=event.event_id) }}" 
+                           class="btn btn-success">
+                            Record Outcomes & Complete Event
+                        </a>
+                        {#
+                        <button type="button" class="btn btn-outline-warning" 
+                                onclick="sendReminder()">
+                            Send Reminder to All
+                        </button>
+                        #}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{#
+<script>
+function sendReminder() {
+    if (confirm('Send reminder to all registered volunteers?')) {
+        fetch('{{ url_for("event_leader_send_reminder", event_id=event.event_id) }}', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+        })
+        .catch(error => {
+            alert('Failed to send reminders. Please try again.');
+        });
+    }
+}
+</script>
+#}
+{% endblock %}

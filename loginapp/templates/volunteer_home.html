@@ -1,17 +1,37 @@
 {% extends 'userbase.html' %}
 
-{% block title %}VolunteerHome{% endblock %}
+{% block title %}Volunteer Home{% endblock %}
 
-{# Set the active page to be highlighted in the navigation bar. #}
 {% set active_page = 'home' %}
 
 {% block content %}
-<section class="container py-5 text-center">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-7">
-            <h1>Volunteer Home Page</h1>
-            <p class="lead text-muted">This is the page a event_leader sees when they first sign in. It should provide quick access to the information and features they're most likely to need when using the app.</p>
+        <div class="col-lg-8 text-center">
+            <h1 class="display-4 mb-3">Welcome, {{ session.username }}! 👋</h1>
+            <p class="lead text-muted mb-4">Ready to make a difference? Browse upcoming cleanup events and join the community.</p>
+            
+            <div class="row g-4 mt-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-success">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title text-success mb-3">Find Events</h5>
+                            <p class="card-text text-muted">Discover cleanup events near you and register to participate.</p>
+                            <a href="{{ url_for('volunteer_events') }}" class="btn btn-success mt-2">Browse Events</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-info">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title text-info mb-3">Your Impact</h5>
+                            <p class="card-text text-muted">Track your participation history and see the difference you've made.</p>
+                            <a href="{{ url_for('volunteer_history') }}" class="btn btn-info mt-2">View History</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'userbase.html' %}
+
+{% block title %}Record Outcomes - {{ event.event_name }}{% endblock %}
+
+{% set active_page = 'my_events' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Record Event Outcomes</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-3">{{ event.event_name }}</h5>
+                    <p class="text-muted">{{ event.event_date }} | {{ event.location }}</p>
+                    
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="num_attendees" class="form-label">Number of Attendees</label>
+                                <input type="number" class="form-control" id="num_attendees" name="num_attendees" 
+                                       value="{{ outcome.num_attendees if outcome else 0 }}" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="bags_collected" class="form-label">Bags Collected</label>
+                                <input type="number" class="form-control" id="bags_collected" name="bags_collected" 
+                                       value="{{ outcome.bags_collected if outcome else 0 }}" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="recyclables_sorted" class="form-label">Recyclables Sorted (kg)</label>
+                            <input type="number" step="0.1" class="form-control" id="recyclables_sorted" name="recyclables_sorted" 
+                                   value="{{ outcome.recyclables_sorted if outcome else 0 }}" min="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="other_achievements" class="form-label">Other Achievements</label>
+                            <textarea class="form-control" id="other_achievements" name="other_achievements" rows="3">{{ outcome.other_achievements if outcome else '' }}</textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Save Outcomes</button>
+                            <a href="{{ url_for('event_leader_event_detail', event_id=event.event_id) }}" 
+                               class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

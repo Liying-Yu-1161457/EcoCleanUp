@@ -1,6 +1,6 @@
 from loginapp import app
 from loginapp import db
-from flask import redirect, render_template, request, session, url_for
+from flask import redirect, render_template, request, session, url_for, flash
 from flask_bcrypt import Bcrypt
 import re
 
@@ -259,7 +259,7 @@ def profile():
 
     # Retrieve user profile from the database.
     with db.get_cursor() as cursor:
-        cursor.execute('SELECT username, email, role FROM users WHERE user_id = %s;',
+        cursor.execute('SELECT * FROM users WHERE user_id = %s;',
                        (session['user_id'],))
         profile = cursor.fetchone()
 
@@ -284,3 +284,72 @@ def logout():
     session.pop('role', None)
     
     return redirect(url_for('login'))
+
+@app.route('/profile/edit', methods=['GET', 'POST'])
+def profile_edit():
+    """edit user info"""
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        full_name = request.form['full_name']
+        phone = request.form['phone']
+        address = request.form['address']
+        interests = request.form['interests']
+        
+        with db.get_cursor() as cursor:
+            cursor.execute('''
+                UPDATE users 
+                SET full_name = %s, contact_number = %s, home_address = %s, environmental_interests = %s
+                WHERE user_id = %s
+            ''', (full_name, phone, address, interests, session['user_id']))
+        
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('profile'))
+    
+    # GET request - show current profile
+    with db.get_cursor() as cursor:
+        cursor.execute('''
+            SELECT username, email, full_name, contact_number, home_address, environmental_interests, role
+            FROM users WHERE user_id = %s
+        ''', (session['user_id'],))
+        user = cursor.fetchone()
+    
+    return render_template('profile_edit.html', user=user)
+
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    """edit password"""
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        current = request.form['current_password']
+        new = request.form['new_password']
+        confirm = request.form['confirm_password']
+        
+        if new != confirm:
+            flash('New passwords do not match.', 'danger')
+            return redirect(url_for('change_password'))
+        
+        if len(new) < 8:
+            flash('Password must be at least 8 characters.', 'danger')
+            return redirect(url_for('change_password'))
+        
+        with db.get_cursor() as cursor:
+            cursor.execute('SELECT password_hash FROM users WHERE user_id = %s', 
+                         (session['user_id'],))
+            user = cursor.fetchone()
+            
+            if not flask_bcrypt.check_password_hash(user['password_hash'], current):
+                flash('Current password is incorrect.', 'danger')
+                return redirect(url_for('change_password'))
+            
+            new_hash = flask_bcrypt.generate_password_hash(new).decode('utf-8')
+            cursor.execute('UPDATE users SET password_hash = %s WHERE user_id = %s',
+                         (new_hash, session['user_id']))
+        
+        flash('Password changed successfully!', 'success')
+        return redirect(url_for('profile'))
+    
+    return render_template('change_password.html')

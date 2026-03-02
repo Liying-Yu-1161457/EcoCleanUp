@@ -1,6 +1,6 @@
 from loginapp import app
 from loginapp import db
-from flask import redirect, render_template, session, url_for, flash
+from flask import redirect, render_template, session, url_for, flash, request 
 @app.route('/volunteer/home')
 def volunteer_home():
      """Volunteer Homepage endpoint.
@@ -205,3 +205,50 @@ def volunteer_history():
         history = cursor.fetchall()
     
     return render_template('volunteer_history.html', history=history)
+
+
+@app.route('/volunteer/feedback/<int:event_id>', methods=['GET', 'POST'])
+def volunteer_feedback_submit(event_id):  
+    """commit feedback"""
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    elif session['role'] != 'volunteer':
+        return render_template('access_denied.html'), 403
+    
+    with db.get_cursor() as cursor:
+        # check event status and volunteer registered status
+        cursor.execute('''
+            SELECT e.event_name 
+            FROM registrations r
+            JOIN events e ON r.event_id = e.event_id
+            WHERE r.user_id = %s AND r.event_id = %s 
+              AND r.attendance_stat = 'attended'
+              AND e.event_date < CURRENT_DATE
+        ''', (session['user_id'], event_id))
+        event = cursor.fetchone()
+        
+        if not event:
+            flash('You can only provide feedback for past events you attended.', 'danger')
+            return redirect(url_for('volunteer_history'))
+        
+        # check submit or not
+        cursor.execute('SELECT feedback_id FROM feedback WHERE user_id = %s AND event_id = %s',
+                      (session['user_id'], event_id))
+        if cursor.fetchone():
+            flash('You have already submitted feedback.', 'info')
+            return redirect(url_for('volunteer_history'))
+    
+    if request.method == 'POST':
+        rating = request.form['rating']
+        comments = request.form['comments']
+        
+        with db.get_cursor() as cursor:
+            cursor.execute('''
+                INSERT INTO feedback (user_id, event_id, rating, comments, submitted_at)
+                VALUES (%s, %s, %s, %s, NOW())
+            ''', (session['user_id'], event_id, rating, comments))
+        
+        flash('Thank you for your feedback!', 'success')
+        return redirect(url_for('volunteer_history'))
+    
+    return render_template('volunteer_feedback.html', event_id=event_id, event_name=event['event_name'])

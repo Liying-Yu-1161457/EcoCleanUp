@@ -57,7 +57,7 @@
                     {% elif session.role == 'event_leader' %}
                     <li class="nav-item">
                         <a class="nav-link{{ ' active' if active_page == 'my_events' else '' }}" 
-                           href="#">My Events</a>
+                        href="{{ url_for('event_leader_my_events') }}">My Events</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{{ ' active' if active_page == 'create_event' else '' }}" 
@@ -65,15 +65,15 @@
                     </li>
                     
                     <!-- Admin menu items -->
-                    {% elif session.role == 'admin' %}
-                    <li class="nav-item">
-                        <a class="nav-link{{ ' active' if active_page == 'manage_users' else '' }}" 
-                           href="#">Manage Users</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{{ ' active' if active_page == 'reports' else '' }}" 
-                           href="#">Reports</a>
-                    </li>
+                {% elif session['role'] == 'admin' %}
+                <li class="nav-item">
+                    <a class="nav-link{{ ' active' if active_page == 'manage_users' else '' }}" 
+                    href="{{ url_for('admin_users') }}">Manage Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{{ ' active' if active_page == 'reports' else '' }}" 
+                    href="{{ url_for('admin_reports') }}">Reports</a>
+                </li>
                     {% endif %}
                 </ul>
                 
