@@ -1,6 +1,6 @@
 
 # Change Log
-All notable changes to the Login Example will be documented in this file.
+All notable changes to the EcoCleanUp will be documented in this file.
 
 Note that this log includes far more technical detail than would typically be
 included in a change log. This project is intended to serve as a teaching tool,
@@ -20,7 +20,7 @@ setting up this project from scratch and creating a new virtual environment as
 detailed in the [README](README.md).
 
 You can also use the new db.py file from this version as a drop-in replacement
-for the one provided with Login Example v2.0.2. If you're doing this, you will
+for the one provided with EcoCleanUp v2.0.2. If you're doing this, you will
 need to:
 
     pip uninstall mysql-connector-python
@@ -28,7 +28,7 @@ need to:
 
 ### Added
 
-- Added this CHANGELOG file to track changes to the Login Example project.
+- Added this CHANGELOG file to track changes to the EcoCleanUp project.
 - Added support for non-standard MySQL server ports. A port could previously be
   specified in [connect.py](loginapp/connect.py), but any port specified there
   was ignored and the default port (`3306`) was always used instead. The

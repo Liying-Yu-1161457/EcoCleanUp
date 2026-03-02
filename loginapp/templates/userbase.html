@@ -61,7 +61,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{{ ' active' if active_page == 'create_event' else '' }}" 
-                           href="#">Create Event</a>
+                        href="{{ url_for('event_leader_create') }}">Create Event</a>
                     </li>
                     
                     <!-- Admin menu items -->

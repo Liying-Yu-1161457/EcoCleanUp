@@ -28,3 +28,9 @@ from loginapp import user
 from loginapp import volunteer
 from loginapp import event_leader
 from loginapp import admin
+
+from datetime import datetime
+
+@app.context_processor
+def utility_processor():
+    return {'now': datetime.now}

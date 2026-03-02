@@ -1,4 +1,4 @@
-# Login Example v3.0 (11 February 2026)
+# EcoCleanUp v3.0 (11 February 2026)
 
 This sample app demonstrates a simple login system that allows users to
 register, log in, and view pages specific to their user role. Those pages don't
