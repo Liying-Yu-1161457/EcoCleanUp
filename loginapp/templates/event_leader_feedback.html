@@ -1,0 +1,44 @@
+{% extends 'userbase.html' %}
+
+{% block title %}Event Feedback{% endblock %}
+
+{% set active_page = 'my_events' %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('event_leader_my_events') }}">My Events</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('event_leader_event_detail', event_id=event_id) }}">Event Details</a></li>
+            <li class="breadcrumb-item active">Feedback</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">Volunteer Feedback</h2>
+
+    {% if feedback %}
+        {% for item in feedback %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ item.full_name or item.username }}</h6>
+                    <div>
+                        {% for i in range(1,6) %}
+                            {% if i <= item.rating %}
+                                <span class="text-warning">★</span>
+                            {% else %}
+                                <span class="text-muted">★</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <p class="card-text">{{ item.comments or 'No comments' }}</p>
+                <small class="text-muted">{{ item.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No feedback yet for this event.</p>
+    {% endif %}
+</div>
+{% endblock %}

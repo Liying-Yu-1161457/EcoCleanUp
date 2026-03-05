@@ -1,38 +1,31 @@
-from loginapp import app
-from loginapp import db
 from flask import redirect, render_template, session, url_for, flash, request
 from datetime import datetime
+
+from loginapp import app, db
 
 def now():
     return datetime.now()
 
 @app.route('/event_leader/home')
 def event_leader_home():
-     """EventLeader Homepage endpoint.
+    """home page for event leaders"""
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    elif session['role'] != 'event_leader':
+        return render_template('access_denied.html'), 403
 
-     Methods:
-     - get: Renders the homepage for the current staff user, or an "Access
-          Denied" 403: Forbidden page if the current user has a different role.
-
-     If the user is not logged in, requests will redirect to the login page.
-     """
-     if 'loggedin' not in session:
-          return redirect(url_for('login'))
-     elif session['role']!='event_leader':
-          return render_template('access_denied.html'), 403
-
-     return render_template('event_leader_home.html')
+    return render_template('event_leader_home.html')
 
 @app.route('/event_leader/create', methods=['GET', 'POST'])
 def event_leader_create():
-    """create event"""
+    """create new event"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'event_leader':
         return render_template('access_denied.html'), 403
     
     if request.method == 'POST':
-        # get data
+        # get form data
         event_name = request.form['event_name']
         location = request.form['location']
         event_type = request.form['event_type']
@@ -44,12 +37,12 @@ def event_leader_create():
         description = request.form.get('description', '')
         safety_info = request.form.get('safety_info', '')
         
-        # verify
+        # check required fields
         if not event_name or not location or not event_date:
             flash('Please fill in all required fields', 'danger')
             return render_template('event_leader_create.html')
         
-        # insert db
+        # save to db
         with db.get_cursor() as cursor:
             cursor.execute('''
                 INSERT INTO events 
@@ -59,14 +52,14 @@ def event_leader_create():
             ''', (event_name, location, event_type, event_date, start_time, end_time,
                   duration, supplies, description, safety_info, session['user_id']))
         
-        flash('Event created successfully!', 'success')
+        flash('Event created!', 'success')
         return redirect(url_for('event_leader_my_events'))
     
     return render_template('event_leader_create.html')
 
 @app.route('/event_leader/my_events')
 def event_leader_my_events():
-    """list all current user's events"""
+    """show all events created by current user"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'event_leader':
@@ -89,14 +82,14 @@ def event_leader_my_events():
 
 @app.route('/event_leader/event/<int:event_id>')
 def event_leader_event_detail(event_id):
-    """view event detail """
+    """show single event details"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'event_leader':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # get event detail
+        # get event
         cursor.execute('''
             SELECT * FROM events 
             WHERE event_id = %s AND event_leader_id = %s
@@ -104,10 +97,10 @@ def event_leader_event_detail(event_id):
         event = cursor.fetchone()
         
         if not event:
-            flash('Event not found or you do not have permission to view it.', 'danger')
+            flash('Event not found', 'danger')
             return redirect(url_for('event_leader_my_events'))
         
-        # list volunteer of event
+        # get volunteers
         cursor.execute('''
             SELECT u.user_id, u.username, u.full_name, u.email, u.contact_number,
                    r.registration_time, r.attendance_stat
@@ -118,25 +111,29 @@ def event_leader_event_detail(event_id):
         ''', (event_id,))
         registrations = cursor.fetchall()
         
-        # get outcomes
+        # get outcomes if any
         cursor.execute('SELECT * FROM outcomes WHERE event_id = %s', (event_id,))
         outcome = cursor.fetchone() or {}
     
+        cursor.execute('SELECT COUNT(*) as count FROM feedback WHERE event_id = %s', (event_id,))
+        result = cursor.fetchone()
+        feedback_count = result['count'] if result else 0
+
     return render_template('event_leader_event_detail.html', 
                          event=event, 
                          registrations=registrations,
-                         outcome=outcome)
+                         outcome=outcome,
+                         feedback_count=feedback_count)
 
 @app.route('/event_leader/cancel/<int:event_id>')
 def event_leader_cancel_event(event_id):
-    """cancel event"""
+    """cancel an upcoming event"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'event_leader':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # check event owner
         cursor.execute('''
             UPDATE events 
             SET status = 'cancelled' 
@@ -145,22 +142,22 @@ def event_leader_cancel_event(event_id):
         ''', (event_id, session['user_id']))
         
         if cursor.fetchone():
-            flash('Event cancelled successfully.', 'success')
+            flash('Event cancelled', 'success')
         else:
-            flash('Event not found, already cancelled, or you do not have permission.', 'danger')
+            flash('Could not cancel event', 'danger')
     
     return redirect(url_for('event_leader_my_events'))
 
 @app.route('/event_leader/record/<int:event_id>', methods=['GET', 'POST'])
 def event_leader_record_outcomes(event_id):
-    """register outcomes"""
+    """record event results"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'event_leader':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # check event is current user join
+        # check event
         cursor.execute('''
             SELECT * FROM events 
             WHERE event_id = %s AND event_leader_id = %s
@@ -168,10 +165,10 @@ def event_leader_record_outcomes(event_id):
         event = cursor.fetchone()
         
         if not event:
-            flash('Event not found or you do not have permission.', 'danger')
+            flash('Event not found', 'danger')
             return redirect(url_for('event_leader_my_events'))
         
-        # check outcome is exist
+        # check if outcomes exist
         cursor.execute('SELECT * FROM outcomes WHERE event_id = %s', (event_id,))
         outcome = cursor.fetchone()
     
@@ -183,7 +180,7 @@ def event_leader_record_outcomes(event_id):
         
         with db.get_cursor() as cursor:
             if outcome:
-                # update record
+                # update
                 cursor.execute('''
                     UPDATE outcomes 
                     SET num_attendees = %s, bags_collected = %s, 
@@ -193,7 +190,7 @@ def event_leader_record_outcomes(event_id):
                 ''', (num_attendees, bags_collected, recyclables_sorted, 
                       other_achievements, event_id))
             else:
-                # create record
+                # insert
                 cursor.execute('''
                     INSERT INTO outcomes 
                     (event_id, num_attendees, bags_collected, recyclables_sorted, 
@@ -202,13 +199,13 @@ def event_leader_record_outcomes(event_id):
                 ''', (event_id, num_attendees, bags_collected, recyclables_sorted,
                       other_achievements, session['user_id']))
             
-            # update completed
+            # mark event as completed
             cursor.execute('''
                 UPDATE events SET status = 'completed' 
                 WHERE event_id = %s
             ''', (event_id,))
         
-        flash('Event outcomes recorded successfully!', 'success')
+        flash('Outcomes recorded', 'success')
         return redirect(url_for('event_leader_event_detail', event_id=event_id))
     
     return render_template('event_leader_record_outcomes.html', 
@@ -216,7 +213,7 @@ def event_leader_record_outcomes(event_id):
 
 @app.route('/event_leader/attendance/<int:event_id>/<int:user_id>', methods=['POST'])
 def event_leader_update_attendance(event_id, user_id):
-    """upate volunteer attendance stat"""
+    """update volunteer attendance status"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'event_leader':
@@ -225,7 +222,6 @@ def event_leader_update_attendance(event_id, user_id):
     attendance_stat = request.form.get('attendance_stat')
     
     with db.get_cursor() as cursor:
-        # confirm current event leader
         cursor.execute('''
             UPDATE registrations r
             SET attendance_stat = %s
@@ -237,22 +233,21 @@ def event_leader_update_attendance(event_id, user_id):
         ''', (attendance_stat, event_id, user_id, session['user_id']))
         
         if cursor.rowcount > 0:
-            flash('Attendance updated successfully.', 'success')
+            flash('Attendance updated', 'success')
         else:
-            flash('Failed to update attendance.', 'danger')
+            flash('Update failed', 'danger')
     
     return redirect(url_for('event_leader_event_detail', event_id=event_id))
 
 @app.route('/event_leader/remove/<int:event_id>/<int:user_id>')
 def event_leader_remove_volunteer(event_id, user_id):
-    """remove event_leader"""
+    """remove volunteer from event"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'event_leader':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # confirm event leader
         cursor.execute('''
             DELETE FROM registrations r
             USING events e
@@ -263,8 +258,28 @@ def event_leader_remove_volunteer(event_id, user_id):
         ''', (event_id, user_id, session['user_id']))
         
         if cursor.rowcount > 0:
-            flash('Volunteer removed from event.', 'success')
+            flash('Volunteer removed', 'success')
         else:
-            flash('Failed to remove volunteer.', 'danger')
+            flash('Remove failed', 'danger')
     
     return redirect(url_for('event_leader_event_detail', event_id=event_id))
+
+@app.route('/event_leader/feedback/<int:event_id>')
+def event_leader_view_feedback(event_id):
+    """view feedback for an event"""
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    elif session['role'] != 'event_leader':
+        return render_template('access_denied.html'), 403
+    
+    with db.get_cursor() as cursor:
+        cursor.execute('''
+            SELECT f.*, u.username, u.full_name
+            FROM feedback f
+            JOIN users u ON f.user_id = u.user_id
+            WHERE f.event_id = %s
+            ORDER BY f.submitted_at DESC
+        ''', (event_id,))
+        feedback = cursor.fetchall()
+    
+    return render_template('event_leader_feedback.html', feedback=feedback, event_id=event_id)

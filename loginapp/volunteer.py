@@ -1,62 +1,27 @@
-from loginapp import app
-from loginapp import db
-from flask import redirect, render_template, session, url_for, flash, request 
+# volunteer functions - doria
+# most of these are based on the LoginExample code
+
+from flask import redirect, render_template, session, url_for, flash, request
+from loginapp import app, db
+from datetime import datetime
+
 @app.route('/volunteer/home')
 def volunteer_home():
-     """Volunteer Homepage endpoint.
-
-     Methods:
-     - get: Renders the homepage for the current customer, or an "Access
-          Denied" 403: Forbidden page if the current user has a different role.
-
-     If the user is not logged in, requests will redirect to the login page.
-     """
-     # Note: You'll need to use "logged in" and role checks like the ones below
-     # on every single endpoint that should be restricted to logged-in users,
-     # or users with a certain role. Otherwise, anyone who knows the URL can
-     # access that page.
-     #
-     # In this example we've just repeated the code everywhere (you'll see the
-     # same checks in staff.py and admin.py), but it would be a great idea to
-     # extract these checks into reusable functions. You could place them in
-     # user.py with the rest of the login system, for example, and import them
-     # into other modules as necessary.
-     #
-     # One common way to implement login and role checks in Flask is with "View
-     # Decorators", such as the "login_required" example in the official
-     # tutorial [1]. If you choose to use that approach, you'll need to adapt
-     # it a little to our project, as we don't store the username in `g.user`.
-     #
-     # References:
-     # [1] https://flask.palletsprojects.com/en/stable/patterns/viewdecorators/
-
-     if 'loggedin' not in session:
-          # The user isn't logged in, so redirect them to the login page.
-          return redirect(url_for('login'))
-     elif session['role']!='volunteer':
-          # The user isn't logged in with a customer account, so return an
-          # "Access Denied" page instead. We don't do a redirect here, because
-          # we're not sending them somewhere else: just delivering an
-          # alternative page.
-          # 
-          # Note: the '403' below returns HTTP status code 403: Forbidden to the
-          # browser, indicating that the user was not allowed to access the
-          # requested page.
-          return render_template('access_denied.html'), 403
-
-     # The user is logged in with a customer account, so render the customer
-     # homepage as requested.
-     return render_template('volunteer_home.html')
-
-@app.route('/volunteer/events')
-def volunteer_events():
-    """display all events"""
+    """volunteer home page"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'volunteer':
         return render_template('access_denied.html'), 403
     
-    # get all events from database
+    return render_template('volunteer_home.html')
+@app.route('/volunteer/events')
+def volunteer_events():
+    """show all upcoming events"""
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    elif session['role'] != 'volunteer':
+        return render_template('access_denied.html'), 403
+    
     with db.get_cursor() as cursor:
         cursor.execute('''
             SELECT event_id, event_name, location, event_date, start_time, end_time, 
@@ -68,16 +33,16 @@ def volunteer_events():
         events = cursor.fetchall()
     
     return render_template('volunteer_events.html', events=events)
+
 @app.route('/volunteer/event/<int:event_id>')
 def volunteer_event_detail(event_id):
-    """display each event detail"""
+    """show single event details"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'volunteer':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # get detail from database
         cursor.execute('''
             SELECT e.*, u.full_name as leader_name
             FROM events e
@@ -89,7 +54,6 @@ def volunteer_event_detail(event_id):
         if not event:
             return render_template('404.html'), 404
         
-        # check current user has attent or not.
         cursor.execute('''
             SELECT registration_id, attendance_stat 
             FROM registrations 
@@ -104,14 +68,14 @@ def volunteer_event_detail(event_id):
 
 @app.route('/volunteer/register/<int:event_id>', methods=['POST'])
 def volunteer_register(event_id):
-    """volunteer register"""
+    """register for an event - checks for time conflicts"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'volunteer':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # 1. check event is exist
+        # check if event exists
         cursor.execute('''
             SELECT event_date, start_time, end_time, status 
             FROM events 
@@ -123,9 +87,10 @@ def volunteer_register(event_id):
             return "Event not found", 404
         
         if event['status'] != 'upcoming':
-            return "This event is no longer available for registration", 400
+            flash('This event is no longer available', 'warning')
+            return redirect(url_for('volunteer_event_detail', event_id=event_id))
         
-        # 2. check registered or not 
+        # check if already registered
         cursor.execute('''
             SELECT registration_id FROM registrations 
             WHERE user_id = %s AND event_id = %s
@@ -135,9 +100,9 @@ def volunteer_register(event_id):
             flash('You are already registered for this event.', 'warning')
             return redirect(url_for('volunteer_event_detail', event_id=event_id))
         
-        # 3. check duty conflict
+        # check for time conflicts - this took me a while to get right
         cursor.execute('''
-            SELECT e.event_id, e.event_name, e.event_date, e.start_time, e.end_time
+            SELECT e.event_id, e.event_name
             FROM registrations r
             JOIN events e ON r.event_id = e.event_id
             WHERE r.user_id = %s 
@@ -147,37 +112,29 @@ def volunteer_register(event_id):
         ''', (session['user_id'], event['event_date'], 
               event['start_time'], event['end_time']))
         
-        conflicting_event = cursor.fetchone()
-        
-        if conflicting_event:
-            flash(
-                f'Cannot register: You already have an event "{conflicting_event["event_name"]}" '
-                f'on {conflicting_event["event_date"]} '
-                f'from {conflicting_event["start_time"]} to {conflicting_event["end_time"]}.',
-                'danger'
-            )
+        conflicting = cursor.fetchone()
+        if conflicting:
+            flash(f'Conflict: you already have "{conflicting["event_name"]}" at this time', 'danger')
             return redirect(url_for('volunteer_event_detail', event_id=event_id))
         
-        # 4. commit register
+        # all good, register
         cursor.execute('''
-            INSERT INTO registrations (user_id, event_id, registration_time, attendance_stat)
-            VALUES (%s, %s, NOW(), 'registered')
+            INSERT INTO registrations (user_id, event_id, attendance_stat)
+            VALUES (%s, %s, 'registered')
         ''', (session['user_id'], event_id))
         
-        flash('Successfully registered for the event!', 'success')
-    
-    return redirect(url_for('volunteer_event_detail', event_id=event_id))
+        flash('Successfully registered!', 'success')
+        return redirect(url_for('volunteer_event_detail', event_id=event_id))
 
 @app.route('/volunteer/history')
 def volunteer_history():
-    """display history"""
+    """show volunteer's past and upcoming registrations"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'volunteer':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # get all members 
         cursor.execute('''
             SELECT 
                 e.event_id,
@@ -194,8 +151,7 @@ def volunteer_history():
                     ELSE 'upcoming'
                 END as event_status,
                 f.rating,
-                f.comments as feedback_comment,
-                f.submitted_at
+                f.comments as feedback_comment
             FROM registrations r
             JOIN events e ON r.event_id = e.event_id
             LEFT JOIN feedback f ON r.user_id = f.user_id AND r.event_id = f.event_id
@@ -206,41 +162,40 @@ def volunteer_history():
     
     return render_template('volunteer_history.html', history=history)
 
-
 @app.route('/volunteer/feedback/<int:event_id>', methods=['GET', 'POST'])
-def volunteer_feedback_submit(event_id):  
-    """commit feedback"""
+def volunteer_feedback_submit(event_id):
+    """submit feedback for past events"""
     if 'loggedin' not in session:
         return redirect(url_for('login'))
     elif session['role'] != 'volunteer':
         return render_template('access_denied.html'), 403
     
     with db.get_cursor() as cursor:
-        # check event status and volunteer registered status
+        # check if user attended this event
         cursor.execute('''
             SELECT e.event_name 
             FROM registrations r
             JOIN events e ON r.event_id = e.event_id
             WHERE r.user_id = %s AND r.event_id = %s 
               AND r.attendance_stat = 'attended'
-              AND e.event_date < CURRENT_DATE
+              AND e.status = 'completed'
         ''', (session['user_id'], event_id))
         event = cursor.fetchone()
         
         if not event:
-            flash('You can only provide feedback for past events you attended.', 'danger')
+            flash('You can only give feedback for events you attended.', 'danger')
             return redirect(url_for('volunteer_history'))
         
-        # check submit or not
+        # check if already submitted
         cursor.execute('SELECT feedback_id FROM feedback WHERE user_id = %s AND event_id = %s',
                       (session['user_id'], event_id))
         if cursor.fetchone():
-            flash('You have already submitted feedback.', 'info')
+            flash('You already submitted feedback for this event.', 'info')
             return redirect(url_for('volunteer_history'))
     
     if request.method == 'POST':
         rating = request.form['rating']
-        comments = request.form['comments']
+        comments = request.form.get('comments', '')
         
         with db.get_cursor() as cursor:
             cursor.execute('''
@@ -248,7 +203,10 @@ def volunteer_feedback_submit(event_id):
                 VALUES (%s, %s, %s, %s, NOW())
             ''', (session['user_id'], event_id, rating, comments))
         
-        flash('Thank you for your feedback!', 'success')
+        flash('Thanks for your feedback!', 'success')
         return redirect(url_for('volunteer_history'))
     
-    return render_template('volunteer_feedback.html', event_id=event_id, event_name=event['event_name'])
+    return render_template('volunteer_feedback.html', 
+                         event_id=event_id, 
+                         event_name=event['event_name'])
+

@@ -1,0 +1,219 @@
+{% extends 'userbase.html' %}
+
+{% block title %}Platform Reports{% endblock %}
+
+{% set active_page = 'reports' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Platform Reports</h2>
+    
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Total Volunteers</h6>
+                    <h2 class="mb-0">{{ stats.total_volunteers or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Event Leaders</h6>
+                    <h2 class="mb-0">{{ stats.total_leaders or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Total Events</h6>
+                    <h2 class="mb-0">{{ stats.total_events or 0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Avg Rating</h6>
+                    <h2 class="mb-0">{{ "%.1f"|format(stats.avg_rating or 0) }}/5</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Monthly Events -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Monthly Events</h5>
+                </div>
+                <div class="card-body">
+                    {% if monthly_events %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>Total Events</th>
+                                        <th>Completed</th>
+                                        <th>Completion Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in monthly_events %}
+                                    <tr>
+                                        <td>{{ month.month }}</td>
+                                        <td>{{ month.event_count }}</td>
+                                        <td>{{ month.completed_count }}</td>
+                                        <td>
+                                            {% if month.event_count > 0 %}
+                                                {{ (month.completed_count / month.event_count * 100)|round }}%
+                                            {% else %}
+                                                0%
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No event data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Event Types -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Events by Type</h5>
+                </div>
+                <div class="card-body">
+                    {% if event_types %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Count</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for type in event_types %}
+                                    <tr>
+                                        <td>{{ type.event_type|title }}</td>
+                                        <td>{{ type.count }}</td>
+                                        <td>
+                                            {% if stats.total_events > 0 %}
+                                                {{ (type.count / stats.total_events * 100)|round(1) }}%
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No event type data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Events -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Most Popular Events</h5>
+                </div>
+                <div class="card-body">
+                    {% if top_events %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Event Name</th>
+                                        <th>Date</th>
+                                        <th>Registrations</th>
+                                        <th>Attended</th>
+                                        <th>Attendance Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in top_events %}
+                                    <tr>
+                                        <td>{{ event.event_name }}</td>
+                                        <td>{{ event.event_date }}</td>
+                                        <td>{{ event.registration_count }}</td>
+                                        <td>{{ event.attended_count or 0 }}</td>
+                                        <td>
+                                            {% if event.registration_count and event.registration_count > 0 %}
+                                                {{ (event.attended_count / event.registration_count * 100)|round }}%
+                                            {% else %}
+                                                0%
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No event data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Volunteers -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Most Active Volunteers</h5>
+                </div>
+                <div class="card-body">
+                    {% if top_volunteers %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Registrations</th>
+                                        <th>Attended</th>
+                                        <th>Feedback Given</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vol in top_volunteers %}
+                                    <tr>
+                                        <td>{{ vol.full_name or vol.username }}</td>
+                                        <td>{{ vol.username }}</td>
+                                        <td>{{ vol.registrations }}</td>
+                                        <td>{{ vol.attended_events }}</td>
+                                        <td>{{ vol.feedback_count }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No volunteer data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

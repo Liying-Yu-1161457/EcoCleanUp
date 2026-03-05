@@ -5,48 +5,48 @@
 {% set active_page = 'profile' %}
 
 {% block content %}
-<section class="container py-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-md-8">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>{{ profile.role.title() }} Profile</h1>
+                <h2>{{ profile.role.title() }} Profile</h2>
                 <div>
                     <a href="{{ url_for('profile_edit') }}" class="btn btn-success">Edit Profile</a>
                     <a href="{{ url_for('change_password') }}" class="btn btn-outline-warning">Change Password</a>
                 </div>
             </div>
             
-            <div class="card shadow-sm">
+            <div class="card">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="text-muted small">Username</label>
-                            <p class="form-control-plaintext">{{ profile.username }}</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="text-muted small">Email</label>
-                            <p class="form-control-plaintext">{{ profile.email }}</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="text-muted small">Full Name</label>
-                            <p class="form-control-plaintext">{{ profile.full_name or 'Not provided' }}</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="text-muted small">Phone</label>
-                            <p class="form-control-plaintext">{{ profile.contact_number or 'Not provided' }}</p>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label class="text-muted small">Address</label>
-                            <p class="form-control-plaintext">{{ profile.home_address or 'Not provided' }}</p>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label class="text-muted small">Environmental Interests</label>
-                            <p class="form-control-plaintext">{{ profile.environmental_interests or 'Not provided' }}</p>
-                        </div>
-                    </div>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 150px;">Username</th>
+                            <td>{{ profile.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ profile.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Full Name</th>
+                            <td>{{ profile.full_name or 'Not provided' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone</th>
+                            <td>{{ profile.contact_number or 'Not provided' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address</th>
+                            <td>{{ profile.home_address or 'Not provided' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Interests</th>
+                            <td>{{ profile.environmental_interests or 'Not provided' }}</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

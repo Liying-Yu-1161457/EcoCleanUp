@@ -109,11 +109,8 @@
         <div class="col-md-4">
             <!-- Registered Volunteers -->
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Registered Volunteers ({{ registrations|length }})</h5>
-                    {% if event.status == 'completed' %}
-                    <span class="badge bg-light text-dark">Event Completed</span>
-                    {% endif %}
                 </div>
                 <div class="card-body p-0">
                     {% if registrations %}
@@ -133,9 +130,9 @@
                                 </div>
                                 
                                 {% if event.status == 'upcoming' %}
-                                <div class="mt-2 d-flex gap-2">
+                                <div class="mt-2">
                                     <!-- Update attendance dropdown -->
-                                    <form method="post" action="{{ url_for('event_leader_update_attendance', event_id=event.event_id, user_id=reg.user_id) }}" class="flex-grow-1">
+                                    <form method="post" action="{{ url_for('event_leader_update_attendance', event_id=event.event_id, user_id=reg.user_id) }}" class="d-inline-block w-75">
                                         <div class="input-group input-group-sm">
                                             <select name="attendance_stat" class="form-select" onchange="this.form.submit()">
                                                 <option value="registered" {{ 'selected' if reg.attendance_stat == 'registered' }}>Registered</option>
@@ -147,12 +144,8 @@
                                     
                                     <!-- Remove volunteer button -->
                                     <a href="{{ url_for('event_leader_remove_volunteer', event_id=event.event_id, user_id=reg.user_id) }}" 
-                                       class="btn btn-sm btn-outline-danger"
+                                       class="btn btn-sm btn-outline-danger float-end"
                                        onclick="return confirm('Remove this volunteer from the event?')">Remove</a>
-                                </div>
-                                {% elif event.status == 'completed' and reg.attendance_stat == 'attended' %}
-                                <div class="mt-2 text-muted small">
-                                    <i>Participant attended</i>
                                 </div>
                                 {% endif %}
                             </div>
@@ -174,14 +167,23 @@
                     <div class="d-grid gap-2">
                         <a href="{{ url_for('event_leader_record_outcomes', event_id=event.event_id) }}" 
                            class="btn btn-success">
-                            Record Outcomes & Complete Event
+                            Complete Event & Record Outcomes
                         </a>
-                        {#
-                        <button type="button" class="btn btn-outline-warning" 
-                                onclick="sendReminder()">
-                            Send Reminder to All
-                        </button>
-                        #}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- View Feedback (for completed events) -->
+            {% if event.status == 'completed' %}
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Volunteer Feedback</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('event_leader_view_feedback', event_id=event.event_id) }}" 
+                           class="btn btn-outline-info">
+                            View Feedback ({{ feedback_count if feedback_count else 0 }})
+                        </a>
                     </div>
                 </div>
             </div>
@@ -189,22 +191,4 @@
         </div>
     </div>
 </div>
-{#
-<script>
-function sendReminder() {
-    if (confirm('Send reminder to all registered volunteers?')) {
-        fetch('{{ url_for("event_leader_send_reminder", event_id=event.event_id) }}', {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-        })
-        .catch(error => {
-            alert('Failed to send reminders. Please try again.');
-        });
-    }
-}
-</script>
-#}
 {% endblock %}
