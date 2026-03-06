@@ -25,8 +25,8 @@ Community cleanup management system for COMP639 project.
 | Role | Username | Password |
 |------|----------|----------|
 | Volunteer | rudyard | Rudyardpass |
-| Event Leader | philip | philip123 |
-| Admin | admin01Tanya | admin123 |
+| Event Leader | philip | Philippass |
+| Admin | admin01Tanya | Abcd1234 |
 
 ## Setup
 
@@ -41,7 +41,7 @@ Community cleanup management system for COMP639 project.
 
 ## GenAI Acknowledgement
 
-This project used:
+This project used the following tools during development (February-March 2026):
 - **GitHub Copilot** - Code completion during development 
 - **ChatGPT** - Debugging help and code examples
 - **generatedata.com** -  Generated test data
