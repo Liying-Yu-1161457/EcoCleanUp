@@ -9,6 +9,7 @@ Community cleanup management system for COMP639 project.
 - View participation history
 - Submit feedback for attended events
 - Login reminders for upcoming events
+- New users are automatically registered as volunteers
 
 **Event Leader**
 - Create and manage cleanup events
@@ -19,6 +20,11 @@ Community cleanup management system for COMP639 project.
 **Admin**
 - Manage user accounts (activate/deactivate)
 - View platform statistics and reports
+- Admins can promote volunteers to event leaders from the user management page
+
+**All users**
+- Profile pictures can be uploaded and are displayed in navigation bar and user lists
+- Profile management with avatar upload
 
 ## Test Accounts
 

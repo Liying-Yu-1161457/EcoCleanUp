@@ -18,7 +18,7 @@ def admin_users():
         # process query sql
         query = '''
             SELECT user_id, username, email, full_name, role, status, 
-                   created_at,
+                   created_at,profile_image,
                    (SELECT COUNT(*) FROM events WHERE event_leader_id = users.user_id) as event_count,
                    (SELECT COUNT(*) FROM registrations WHERE user_id = users.user_id) as registration_count
             FROM users
@@ -66,7 +66,8 @@ def admin_toggle_status(user_id):
     with db.get_cursor() as cursor:
         cursor.execute('''
             UPDATE users 
-            SET status = CASE WHEN status = 'active' THEN 'inactive' ELSE 'active' END
+            SET status = CASE WHEN status = 'active'::user_status THEN 'inactive'::user_status
+                ELSE 'active'::user_status END
             WHERE user_id = %s AND role != 'admin'
             RETURNING username, status
         ''', (user_id,))
@@ -226,3 +227,27 @@ def admin_reports():
                          top_events=top_events,
                          top_volunteers=top_volunteers,
                          event_types=event_types)
+
+@app.route('/admin/user/<int:user_id>/role', methods=['POST'])
+def admin_change_role(user_id):
+    """change user role"""
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    elif session['role'] != 'admin':
+        return render_template('access_denied.html'), 403
+    
+    new_role = request.form.get('role')
+    
+    with db.get_cursor() as cursor:
+        cursor.execute('''
+            UPDATE users 
+            SET role = %s 
+            WHERE user_id = %s AND role != 'admin'
+        ''', (new_role, user_id))
+        
+        if cursor.rowcount > 0:
+            flash('User role updated', 'success')
+        else:
+            flash('Cannot change admin role', 'danger')
+    
+    return redirect(url_for('admin_users'))

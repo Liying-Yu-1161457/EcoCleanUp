@@ -13,19 +13,30 @@
                     <h4 class="mb-0">Edit Profile</h4>
                 </div>
                 <div class="card-body">
-                    <form method="post" action="{{ url_for('profile_edit') }}">
+                    <form method="post" action="{{ url_for('profile_edit') }}" enctype="multipart/form-data">
+                            {% if user.profile_image %}
+                            <div class="mb-2 text-center">
+                                  <img src="{{ url_for('static', filename='uploads/' + user.profile_image) }}" style="max-width: 200px;">
+                                <p class="text-muted small mt-1">Current image</p>
+                            </div>
+                            {% else %}
+                            <div class="mb-2 text-center">
+                                <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                    style="width: 120px; height: 120px;">
+                                    <span class="text-white display-6">{{ user.username[0]|upper }}</span>
+                                </div>
+                                <p class="text-muted small mt-1">No image</p>
+                            </div>
+                        {% endif %}
+                            
+                            
+                    <input type="file" class="form-control" name="profile_image" accept="image/*">
+                    <small class="text-muted">Upload a new image (optional)</small>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="username" class="form-label">Username</label>
                                 <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
                                 <small class="text-muted">Username cannot be changed.</small>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Profile Image</label>
-                                <input type="file" class="form-control" name="profile_image" accept="image/*">
-                                {% if user.profile_image %}
-                                <img src="{{ url_for('static', filename='uploads/' + user.profile_image) }}" class="mt-2" style="max-height: 100px;">
-                                {% endif %}
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email</label>

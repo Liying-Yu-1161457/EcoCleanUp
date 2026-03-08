@@ -15,7 +15,18 @@
                     <a href="{{ url_for('change_password') }}" class="btn btn-outline-warning">Change Password</a>
                 </div>
             </div>
-            
+            <div class="text-center mb-4">
+                {% if profile.profile_image %}
+                    <img src="{{ url_for('static', filename='uploads/' + profile.profile_image) }}" 
+                        class="rounded-circle img-thumbnail" 
+                        style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto" 
+                        style="width: 150px; height: 150px;">
+                        <span class="text-white display-4">{{ profile.username[0]|upper }}</span>
+                    </div>
+                {% endif %}
+            </div>
             <div class="card">
                 <div class="card-body">
                     <table class="table table-borderless">

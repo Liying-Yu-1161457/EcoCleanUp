@@ -1,9 +1,12 @@
-from flask import redirect, render_template, request, session, url_for, flash
+import re,time,os
+from flask import redirect, render_template, request, session, url_for, flash, current_app
 from flask_bcrypt import Bcrypt
-import re
-
+from werkzeug.utils import secure_filename
 from loginapp import app, db
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 flask_bcrypt = Bcrypt(app)
 DEFAULT_USER_ROLE = 'volunteer'
 
@@ -40,18 +43,19 @@ def login():
 
         with db.get_cursor() as cursor:
             cursor.execute('''
-                SELECT user_id, username, password_hash, role
+                SELECT user_id, username, password_hash, role, profile_image
                 FROM users
                 WHERE username = %s
             ''', (username,))
             user = cursor.fetchone()
-
+            
             if user:
                 if flask_bcrypt.check_password_hash(user['password_hash'], password):
                     session['loggedin'] = True
                     session['user_id'] = user['user_id']
                     session['username'] = user['username']
                     session['role'] = user['role']
+                    session['profile_image'] = user['profile_image']    
                     
                     if user['role'] == 'volunteer':
                         with db.get_cursor() as cursor2:
@@ -98,6 +102,22 @@ def signup():
         phone = request.form.get('phone', '')
         address = request.form.get('address', '')
         interests = request.form.get('interests', '')
+        profile_image = None
+        
+        if 'profile_image' in request.files:
+            file = request.files['profile_image']
+            if allowed_file(file.filename):
+            
+                # generata file primary key
+                
+                ext = file.filename.rsplit('.', 1)[1].lower()
+                filename = f"user_{int(time.time())}.{ext}"
+                
+                # save file
+                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                full_path = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(full_path)
+                profile_image = filename
 
         username_error = None
         email_error = None
@@ -138,9 +158,9 @@ def signup():
         with db.get_cursor() as cursor:
             cursor.execute('''
                 INSERT INTO users 
-                (username, password_hash, email, role, full_name, contact_number, home_address, environmental_interests)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            ''', (username, password_hash, email, DEFAULT_USER_ROLE, full_name, phone, address, interests))
+                (username, password_hash, email, role, full_name, contact_number, home_address, environmental_interests, profile_image)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (username, password_hash, email, DEFAULT_USER_ROLE, full_name, phone, address, interests, profile_image))
 
         flash('Account created! You can now log in.', 'success')
         return redirect(url_for('login'))
@@ -155,12 +175,16 @@ def profile():
 
     with db.get_cursor() as cursor:
         cursor.execute('''
-            SELECT username, email, full_name, contact_number, home_address, environmental_interests, role
+            SELECT username, email, full_name, contact_number, home_address, environmental_interests, role, profile_image
             FROM users WHERE user_id = %s
         ''', (session['user_id'],))
         profile = cursor.fetchone()
 
     return render_template('profile.html', profile=profile)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
 def profile_edit():
@@ -173,20 +197,48 @@ def profile_edit():
         phone = request.form['phone']
         address = request.form['address']
         interests = request.form['interests']
+        profile_image = None
+
+        print("=== FORM DATA ===")
+        print(request.form)
+        print("=== FILES ===")
+        print(request.files)
+        if 'profile_image' in request.files:
+            file = request.files['profile_image']
+            print(f"Filename: {file.filename}")
+            print(f"Content Type: {file.content_type}")
+            if allowed_file(file.filename):
+
+                # save file
+                filename = f"user_{session['user_id']}_{int(time.time())}.jpg"
+                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                full_path = os.path.join(UPLOAD_FOLDER, filename)
+                profile_image = filename
+                file.save(full_path)
+               
+            else:
+                print("No profile_image in request.files")
 
         with db.get_cursor() as cursor:
-            cursor.execute('''
-                UPDATE users 
-                SET full_name = %s, contact_number = %s, home_address = %s, environmental_interests = %s
-                WHERE user_id = %s
-            ''', (full_name, phone, address, interests, session['user_id']))
+            if profile_image:
+                cursor.execute('''
+                    UPDATE users 
+                    SET full_name = %s, contact_number = %s, home_address = %s, environmental_interests = %s, profile_image = %s
+                    WHERE user_id = %s
+                ''', (full_name, phone, address, interests, profile_image,session['user_id'] ))
+            else:
+                cursor.execute('''
+                    UPDATE users 
+                    SET full_name = %s, contact_number = %s, home_address = %s, environmental_interests = %s
+                    WHERE user_id = %s
+                ''', (full_name, phone, address, interests, session['user_id']))
 
         flash('Profile updated', 'success')
         return redirect(url_for('profile'))
 
     with db.get_cursor() as cursor:
         cursor.execute('''
-            SELECT username, email, full_name, contact_number, home_address, environmental_interests, role
+            SELECT username, email, full_name, contact_number, home_address, environmental_interests, role, profile_image
             FROM users WHERE user_id = %s
         ''', (session['user_id'],))
         user = cursor.fetchone()

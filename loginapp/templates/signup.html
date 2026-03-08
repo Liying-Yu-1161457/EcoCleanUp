@@ -73,7 +73,6 @@
                         <h1>Join EcoCleanUp</h1>
                         <p class="mb-0 opacity-75">Become part of the community</p>
                     </div>
-                    
                     <div class="signup-body">
                         {% if signup_successful %}
                         <div class="alert alert-success text-center">
@@ -83,7 +82,7 @@
                             <a href="{{ url_for('login') }}" class="btn btn-success btn-sm">Log In Now</a>
                         </div>
                         {% else %}
-                        <form action="{{ url_for('signup') }}" method="post">
+                        <form method="post" action="{{ url_for('signup') }}" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="username" class="form-label">Username</label>
@@ -154,6 +153,12 @@
                                           placeholder="e.g. beach cleanups, tree planting, recycling..."></textarea>
                             </div>
                             
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image (optional)</label>
+                                <input type="file" class="form-control" name="profile_image" accept="image/*">
+                                <small class="text-muted">Upload a profile picture (optional)</small>
+                            </div>
+
                             <div class="mb-4">
                                 <label for="password" class="form-label">Password</label>
                                 <input type="password" 
